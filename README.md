@@ -5,7 +5,6 @@ This project implements a Python-based agent system that interacts with OpenAI's
 ## Features
 
 - Custom Agent implementation for OpenAI integration
-- Support for multiple actions including calculations and planetary mass queries
 - Docker containerization with uv package manager
 - Environment variable management for secure API key handling
 
