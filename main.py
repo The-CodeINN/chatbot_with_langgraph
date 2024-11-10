@@ -1,4 +1,5 @@
 import os
+import re
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -120,14 +121,109 @@ known_actions = {
     "planet_mass": planet_mass,
 }
 
-# Example usage:
 agent = Agent(system=prompt)
-response = agent("What is the mass of Earth?")
-print(response)
 
-response = agent("planet_mass: Earth")
-print(response)
+# Example usage:
+# response = agent("What is the mass of Earth?")
+# print(response)
 
-# Now the observation is added to the same interaction
-next_response = f"Observation: {response}"
-print(agent(next_response))
+# response = agent("planet_mass: Earth")
+# print(response)
+
+# # Now the observation is added to the same interaction
+# next_response = f"Observation: {response}"
+# print(agent(next_response))
+
+
+# Complex queries
+# question = "What is the combined mass of Earth and Mars?"
+# response = agent(question)
+
+# print(response)
+
+# next_prompt = "Observation: {}".format(planet_mass("Earth"))
+# print(next_prompt)
+
+# res = agent(next_prompt)
+# print(res)
+
+# next_prompt = "Observation: {}".format(planet_mass("Mars"))
+# print(next_prompt)
+
+# res = agent(next_prompt)
+# print(res)
+
+# Automated complex queries
+# Create a loop to automate the agent until the agent returns the answer
+
+
+action_pattern = re.compile(r"^Action: (\w+): (.*)$")
+
+
+# Create a query function
+# def query(question, max_turns=10):
+#     i = 0
+#     bot = Agent(prompt)
+#     next_prompt = question
+#     while i < max_turns:
+#         i += 1
+#         result = bot(next_prompt)
+#         print(result)
+#         actions = [
+#             action_pattern.match(a)
+#             for a in result.split("\n")
+#             if action_pattern.match(a)
+#         ]
+#         if actions:
+#             # There is an action to run
+#             action, action_input = actions[0].groups()
+#             if action not in known_actions:
+#                 raise Exception("Unknown action: {}: {}".format(action, action_input))
+#             print(" -- running {} {}".format(action, action_input))
+#             observation = known_actions[action](action_input)
+#             print("Observation:", observation)
+#             next_prompt = "Observation: {}".format(observation)
+#         else:
+#             return
+
+
+# # Run the query
+# question = "What is the combined mass of Earth, Mars, Venus, and Jupiter?"
+# query(question)
+
+
+# Function to handle the interactive query
+def query_interactive():
+    bot = Agent(prompt)
+    max_turns = int(input("Enter the maximum number of turns: "))
+    i = 0
+
+    while i < max_turns:
+        i += 1
+        question = input("You: ")
+        result = bot(question)
+        print("Bot:", result)
+
+        actions = [
+            action_pattern.match(a)
+            for a in result.split("\n")
+            if action_pattern.match(a)
+        ]
+        if actions:
+            action, action_input = actions[0].groups()
+            if action not in known_actions:
+                print(f"Unknown action: {action}: {action_input}")
+                continue
+            print(f" -- running {action} {action_input}")
+            observation = known_actions[action](action_input)
+            print("Observation:", observation)
+            next_prompt = f"Observation: {observation}"
+            result = bot(next_prompt)
+            print("Bot:", result)
+        else:
+            print("No actions to run.")
+            break
+
+
+if __name__ == "__main__":
+    query_interactive()
