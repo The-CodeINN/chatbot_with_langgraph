@@ -55,7 +55,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/Scripts/activate  # On Windows: .venv\Scripts\activate
 ```
 
 3. Install dependencies:
